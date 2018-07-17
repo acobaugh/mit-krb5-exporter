@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Tkanos/gonfig"
-	//"golang.org/x/oauth2"
+	"github.com/alexflint/go-arg"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/clientcredentials"
 	"log"
@@ -15,9 +15,18 @@ type Cfg struct {
 }
 
 func main() {
+	var args struct {
+		Config    string `arg:"required"`
+		Tktpolicy string `arg:"required"`
+		Princmeta string `arg:"required"`
+		Stdout    bool
+	}
+
+	arg.MustParse(&args)
+
 	// read config file/env
 	cfg := Cfg{}
-	err := gonfig.GetConf("mit-krb5-exporter.json", &cfg)
+	err := gonfig.GetConf(args.Config, &cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
