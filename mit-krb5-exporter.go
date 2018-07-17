@@ -11,7 +11,6 @@ import (
 type Cfg struct {
 	ClientID     string
 	ClientSecret string
-	AuthURL      string
 	TokenURL     string
 }
 
@@ -22,6 +21,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Print("Read config file")
 
 	// oauth2 client
 	oauthConf := clientcredentials.Config{
@@ -31,10 +31,13 @@ func main() {
 		Scopes:       []string{},
 	}
 
-	ctx := context.Background()
-	tok, err := oauthConf.Token(ctx)
+	client := oauthConf.Client(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print("%s\n", tok)
+	resp, err := client.Get(cfg.TokenURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(resp.Status)
 }
