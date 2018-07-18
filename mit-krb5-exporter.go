@@ -6,12 +6,14 @@ import (
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/clientcredentials"
 	"log"
+	"time"
 )
 
 type Cfg struct {
 	ClientID     string
 	ClientSecret string
 	TokenURL     string
+	Timeout      int
 }
 
 func main() {
@@ -25,7 +27,7 @@ func main() {
 	arg.MustParse(&args)
 
 	// read config file/env
-	cfg := Cfg{}
+	cfg := Cfg{Timeout: 60}
 	err := gonfig.GetConf(args.Config, &cfg)
 	if err != nil {
 		log.Fatal(err)
@@ -39,11 +41,14 @@ func main() {
 		TokenURL:     cfg.TokenURL,
 		Scopes:       []string{},
 	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.Timeout)*time.Second)
+	defer cancel()
 
-	client := oauthConf.Client(context.Background())
+	client := oauthConf.Client(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	resp, err := client.Get(cfg.TokenURL)
 	if err != nil {
 		log.Fatal(err)
