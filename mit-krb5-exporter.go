@@ -5,9 +5,11 @@ import (
 	"github.com/Tkanos/gonfig"
 	"github.com/alexflint/go-arg"
 	log "github.com/sirupsen/logrus"
+	lSyslog "github.com/sirupsen/logrus/hooks/syslog"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/clientcredentials"
 	"io"
+	"log/syslog"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -26,28 +28,45 @@ type Args struct {
 	Config string `arg:"required"`
 	Key    string `arg:"required"`
 	File   string `arg:"required"`
-	Stdout bool
+	Syslog bool
 }
 
 func main() {
+	// structured logging
 	log.SetFormatter(&log.JSONFormatter{})
 
+	// args
 	args, err := parseArgs()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// syslog
+	if args.Syslog {
+		log.Info("Enabling syslog")
+		sysloghook, err := lSyslog.NewSyslogHook("", "", syslog.LOG_INFO, "")
+
+		if err == nil {
+			log.AddHook(sysloghook)
+		} else {
+			log.Warn(err)
+		}
+	}
+
+	// read our config file
 	cfg, err := parseConf(args.Config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// create context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.Timeout)*time.Second)
 	defer cancel()
 
 	// create an http client and get our oauth token
 	client := oauthClient(ctx, cfg)
 
+	// open the input file
 	file, err := os.Open(args.File)
 	if err != nil {
 		log.Fatal(err)
@@ -58,6 +77,7 @@ func main() {
 		"file":        args.File,
 		"service_url": cfg.ServiceURL,
 	}).Info("Uploading")
+
 	resp, err := uploadFile(client, cfg.ServiceURL, args.Key, file)
 	if err != nil {
 		log.Fatal(err)
