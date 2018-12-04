@@ -54,12 +54,15 @@ func main() {
 	}
 	defer file.Close()
 
-	log.Printf("Uploading %s to %s...", args.File, cfg.ServiceURL)
+	log.WithFields(log.Fields{
+		"file":        args.File,
+		"service_url": cfg.ServiceURL,
+	}).Info("Uploading")
 	resp, err := uploadFile(client, cfg.ServiceURL, args.Key, file)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Print(resp.Status)
+	log.Info(resp.Status)
 }
 
 func parseConf(cfgFile string) (Cfg, error) {
@@ -94,6 +97,7 @@ func uploadFile(client *http.Client, url string, key string, file *os.File) (res
 	var fw io.Writer
 	w := multipart.NewWriter(&b)
 
+	// create the form
 	if fw, err = w.CreateFormFile(key, file.Name()); err != nil {
 		return
 	}
@@ -104,15 +108,15 @@ func uploadFile(client *http.Client, url string, key string, file *os.File) (res
 
 	w.Close()
 
-	// Now that you have a form, you can submit it to your handler.
+	// create a new request
 	req, err := http.NewRequest("POST", url, &b)
 	if err != nil {
 		return
 	}
-	// Don't forget to set the content type, this will contain the boundary.
+	// set content-type
 	req.Header.Set("Content-Type", w.FormDataContentType())
 
-	// Submit the request
+	// submit the request
 	res, err = client.Do(req)
 
 	return
