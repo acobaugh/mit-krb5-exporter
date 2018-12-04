@@ -45,21 +45,19 @@ func main() {
 
 	// create an http client and get our oauth token
 	client := oauthClient(ctx, cfg)
-	resp, err := client.Get(cfg.TokenURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Print(resp.Status)
 
 	file, err := os.Open(args.File)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
 
-	resp, err = uploadFile(client, cfg.ServiceURL, args.Key, file)
+	log.Printf("Uploading %s to %s...", args.File, cfg.ServiceURL)
+	resp, err := uploadFile(client, cfg.ServiceURL, args.Key, file)
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Print(resp.Status)
 }
 
 func parseConf(cfgFile string) (Cfg, error) {
@@ -91,17 +89,15 @@ func oauthClient(ctx context.Context, c Cfg) *http.Client {
 
 func uploadFile(client *http.Client, url string, key string, file *os.File) (res *http.Response, err error) {
 	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
 	var fw io.Writer
-	if x, ok := file.(io.Closer); ok {
-		defer x.Close()
-	}
-	// Add a file
-	if fw, err = w.CreateFormFile(key, x.Name()); err != nil {
+	w := multipart.NewWriter(&b)
+
+	if fw, err = w.CreateFormFile(key, file.Name()); err != nil {
 		return
 	}
-	if _, err = io.Copy(fw, r); err != nil {
-		return _, err
+
+	if _, err = io.Copy(fw, file); err != nil {
+		return
 	}
 
 	w.Close()
@@ -115,7 +111,7 @@ func uploadFile(client *http.Client, url string, key string, file *os.File) (res
 	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	// Submit the request
-	res, err := client.Do(req)
+	res, err = client.Do(req)
 
 	return
 }
