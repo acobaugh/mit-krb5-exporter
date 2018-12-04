@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"github.com/Tkanos/gonfig"
 	"github.com/alexflint/go-arg"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/clientcredentials"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -30,6 +30,8 @@ type Args struct {
 }
 
 func main() {
+	log.SetFormatter(&log.JSONFormatter{})
+
 	args, err := parseArgs()
 	if err != nil {
 		log.Fatal(err)
