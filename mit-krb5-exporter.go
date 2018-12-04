@@ -66,23 +66,28 @@ func main() {
 	// create an http client and get our oauth token
 	client := oauthClient(ctx, cfg)
 
+	cl := log.WithFields(log.Fields{
+		"file":        args.File,
+		"service_url": cfg.ServiceURL,
+	})
+
 	// open the input file
 	file, err := os.Open(args.File)
 	if err != nil {
-		log.Fatal(err)
+		cl.Fatal(err)
 	}
 	defer file.Close()
 
-	log.WithFields(log.Fields{
-		"file":        args.File,
-		"service_url": cfg.ServiceURL,
-	}).Info("Uploading")
-
+	cl.Info("Uploading...")
 	resp, err := uploadFile(client, cfg.ServiceURL, args.Key, file)
 	if err != nil {
-		log.Fatal(err)
+		cl.Fatal(err)
 	}
-	log.Info(resp.Status)
+	if resp.Code != 200 {
+		cl.Error(resp.Status)
+	} else {
+		cl.Info(resp.Status)
+	}
 }
 
 func parseConf(cfgFile string) (Cfg, error) {
