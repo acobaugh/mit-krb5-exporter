@@ -59,17 +59,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	cl := log.WithFields(log.Fields{
+		"file":        args.File,
+		"service_url": cfg.ServiceURL,
+		"client_id":   cfg.ClientID,
+		"pid":         os.Getpid(),
+	})
+
 	// create context
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cfg.Timeout)*time.Second)
 	defer cancel()
 
 	// create an http client and get our oauth token
 	client := oauthClient(ctx, cfg)
-
-	cl := log.WithFields(log.Fields{
-		"file":        args.File,
-		"service_url": cfg.ServiceURL,
-	})
 
 	// open the input file
 	file, err := os.Open(args.File)
@@ -83,7 +85,7 @@ func main() {
 	if err != nil {
 		cl.Fatal(err)
 	}
-	if resp.Code != 200 {
+	if resp.StatusCode != 200 {
 		cl.Error(resp.Status)
 	} else {
 		cl.Info(resp.Status)
