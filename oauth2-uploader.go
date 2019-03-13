@@ -25,21 +25,19 @@ type Cfg struct {
 }
 
 type Args struct {
-	Config string `arg:"required"`
-	Key    string `arg:"required"`
-	File   string `arg:"required"`
-	Syslog bool
+	Config string `arg:"required,help:JSON config file"`
+	Key    string `arg:"required,help:Form input name"`
+	File   string `arg:"required,help:File to upload"`
+	Syslog bool   `arg:"help:Enable syslog output"`
 }
 
 func main() {
-	// structured logging
-	log.SetFormatter(&log.JSONFormatter{})
-
 	// args
-	args, err := parseArgs()
-	if err != nil {
-		log.Fatal(err)
-	}
+	var args Args
+	arg.MustParse(&args)
+
+	// set up logging
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true, TimestampFormat: time.RFC3339})
 
 	// syslog
 	if args.Syslog {
@@ -61,6 +59,7 @@ func main() {
 
 	cl := log.WithFields(log.Fields{
 		"file":        args.File,
+		"key":         args.Key,
 		"service_url": cfg.ServiceURL,
 		"client_id":   cfg.ClientID,
 		"pid":         os.Getpid(),
@@ -98,13 +97,6 @@ func parseConf(cfgFile string) (Cfg, error) {
 	err := gonfig.GetConf(cfgFile, &cfg)
 
 	return cfg, err
-}
-
-func parseArgs() (Args, error) {
-	var args Args
-	err := arg.Parse(&args)
-
-	return args, err
 }
 
 func oauthClient(ctx context.Context, c Cfg) *http.Client {
