@@ -11,11 +11,12 @@ script:
 - make lint
 - make
 deploy:
+  skip_cleanup: true
   provider: releases
   api_key:
     secure: bLj4G21yUnDTcUxcyPDAudhicxCZeZRVwGRM9/r2c7vK4hqRvY6+Df6UMWF+nYZreGDAdW1C9aOz/6Ig90yo137z/k4xvkLBO+78QRiHBaU1GOwtTGn0EOlHJGqWUT4nIm78a3pKOVunLUUp784EXj9YiK1P6WTbrXymJjs/PLC9+9R86FqJkt4CgvTZpD5UtXbrZXrAWALHAYjpRcuWXlN34uMec+24NAVYUMGuE7wTxl46TBM96tg4+1wVE+gM0jnaxmuKYC4FagMA1QwmlGF7YSV2l4CJ42RTKb8TZupOm3Pv0P1gSFLlGeEer8P5ZuezaiYhMT/UkRq0EMTefAes5VJoCsxCBdjU+w8pJ5b1cWc7we3GG+K5xq06+mM5BputVmIqDJ+JjTK41vuD9hd/ofFiWQATEuWBwVcjU1opJB91ltHGndVsd5ncUHjCP6IEt0ZayiaENjlnml9jNk7PcxbPitGxpv2WmrnSYkXZbNCMq12WNBH3o98rtusr7zl/aLmoMsNWy01AjjUTKMonlrgWSdRYYYnUNG4QYKLajuW6Xx4jQNRDO5Nb5dhUSQ70bFL2mhZqbSqG1gCZ7Cz3v9j/XluoNSKEX6r+K+bbhcjN+CAhbqm7ChWBxH8dav6D/MPzEAkabDQGjPQJUAIJIP+1taP7mFmVvmiVUwI=
   file: oauth2-uploader
   on:
-    branch: master
+    condition: "$LATEST = true"
     tags: true
     repo: acobaugh/oauth2-uploader
