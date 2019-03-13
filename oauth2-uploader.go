@@ -31,6 +31,8 @@ type Args struct {
 	Syslog bool   `arg:"help:Enable syslog output"`
 }
 
+var version string
+
 func main() {
 	// args
 	var args Args
@@ -63,6 +65,7 @@ func main() {
 		"service_url": cfg.ServiceURL,
 		"client_id":   cfg.ClientID,
 		"pid":         os.Getpid(),
+		"version":     args.Version(),
 	})
 
 	// create context
@@ -139,4 +142,8 @@ func uploadFile(client *http.Client, url string, key string, file *os.File) (res
 	res, err = client.Do(req)
 
 	return
+}
+
+func (Args) Version() string {
+	return version
 }
