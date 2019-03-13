@@ -6,7 +6,8 @@ compile:
 
 .PHONY: deps
 deps:
-	go get -u github.com/golang/dep
+	curl -L -s https://github.com/golang/dep/releases/download/v0.5.1/dep-linux-amd64 -o ${GOPATH}/bin/dep
+	chmod +x ${GOPATH}/bin/dep
 	dep ensure
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
