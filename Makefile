@@ -6,6 +6,7 @@ compile:
 
 .PHONY: deps
 deps:
+	go get -u github.com/golang/dep
 	dep ensure
 	go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
