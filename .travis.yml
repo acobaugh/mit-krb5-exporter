@@ -1,28 +1,19 @@
 sudo: false
 language: go
-
 matrix:
   include:
   - go: 1.11.x
   - go: 1.12.x
     env: LATEST=true
-
 before_script:
-  - make deps
-
+- make deps
 script:
-  - make lint
-  - make
-
+- make lint
+- make
 deploy:
   provider: releases
-  skip_cleanup: true
   api_key:
-    secure: gkrpLD07DCYmyAhRpussPRbUU3isNQ2+Xl3uNUeif8FouMjCQ5G4SIJ3afCEM3da6r+Dw6wNuqEr/R18PMs5V5K1lHpkxVMDKiFXTvJBPmGDiEU6arHqtgxbeiCC4t0Q3LTrR/YvT+6/kv2PUzQfF1+J2faGqZKKJ910Sl9r+8rZJj5IEsUieyj/AwhHjSRA9YM3JweV9ktrpG/zKaSK2PX3+6+B0MVWnYIP27XFqM2bOD2PR0ZMX08A6pYl9zvO1ipOiT0zlO426xk2R4bDXRB/WBR2euUkEbCRTJ1Rh/643FYhAR5sJk1v71MGsnHFgBVD35//t5aLzNmhwnHxJt8BP/hnDa11P4+6gdXR3qhekdh9f/18YeDJC2mbzkGRI+Y0ieeuqDn9LkxBpTI1mTxvs2qwxmiwaGVFzTLFLRp8rc5o658dlm1/W2/IAb08ldrBYhqyj4+jd5gh8vZsbfFUNDRSwh63IKSekBrPHAPWWrzxTtuHXRFbq/pU+/aUcqalMdjit2BOibPDVPWWbRgJLgDQOne1zLUV3crne9bEh/9DZSHzAYq0ueqKibXWTw9FAWKRvf8lO6LAQgnsZuK96UL1OWuG5CbhUhivI916PfgA/tMTMzyXRaKJwLQnO9Vc/zQhZqL6rEr0Z7DdtRJx2qQhXLEVe43cLGw3bDM=
+    secure: bLj4G21yUnDTcUxcyPDAudhicxCZeZRVwGRM9/r2c7vK4hqRvY6+Df6UMWF+nYZreGDAdW1C9aOz/6Ig90yo137z/k4xvkLBO+78QRiHBaU1GOwtTGn0EOlHJGqWUT4nIm78a3pKOVunLUUp784EXj9YiK1P6WTbrXymJjs/PLC9+9R86FqJkt4CgvTZpD5UtXbrZXrAWALHAYjpRcuWXlN34uMec+24NAVYUMGuE7wTxl46TBM96tg4+1wVE+gM0jnaxmuKYC4FagMA1QwmlGF7YSV2l4CJ42RTKb8TZupOm3Pv0P1gSFLlGeEer8P5ZuezaiYhMT/UkRq0EMTefAes5VJoCsxCBdjU+w8pJ5b1cWc7we3GG+K5xq06+mM5BputVmIqDJ+JjTK41vuD9hd/ofFiWQATEuWBwVcjU1opJB91ltHGndVsd5ncUHjCP6IEt0ZayiaENjlnml9jNk7PcxbPitGxpv2WmrnSYkXZbNCMq12WNBH3o98rtusr7zl/aLmoMsNWy01AjjUTKMonlrgWSdRYYYnUNG4QYKLajuW6Xx4jQNRDO5Nb5dhUSQ70bFL2mhZqbSqG1gCZ7Cz3v9j/XluoNSKEX6r+K+bbhcjN+CAhbqm7ChWBxH8dav6D/MPzEAkabDQGjPQJUAIJIP+1taP7mFmVvmiVUwI=
   file: oauth2-uploader
   on:
     repo: acobaugh/oauth2-uploader
-    tags: true
-    condition: "$LATEST = true"
-
-
