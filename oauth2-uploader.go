@@ -39,7 +39,7 @@ func main() {
 	arg.MustParse(&args)
 
 	// set up logging
-	log.SetFormatter(&log.TextFormatter{FullTimestamp: true, TimestampFormat: time.RFC3339})
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true, TimestampFormat: time.RFC3339, DisableLevelTruncation: true, DisableColors: true})
 
 	// syslog
 	if args.Syslog {
